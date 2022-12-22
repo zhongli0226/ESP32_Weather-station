@@ -1,10 +1,23 @@
+/*
+ * @Description: 
+ * @Version: 
+ * @Autor: tangwc
+ * @Date: 2022-12-21 20:08:12
+ * @LastEditors: tangwc
+ * @LastEditTime: 2022-12-22 21:49:58
+ * @FilePath: \esp32_weather-station\components\ui_main\ui_main.c
+ * 
+ *  Copyright (c) 2022 by tangwc, All Rights Reserved. 
+ */
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/param.h>
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include "esp_event.h"
+#include "esp_log.h"
+#include "esp_system.h"
 
 #include "lvgl/lvgl.h"
 #include "lvgl_helpers.h"
@@ -12,7 +25,7 @@
 
 #include "ui_main.h"
 
-#define TAG "lvgl_task"
+#define TAG "gui_task"
 #define LV_TICK_PERIOD_MS 1
 
 /*用定时器给LVGL提供时钟*/
@@ -22,9 +35,9 @@ static void lv_tick_task(void *arg)
     lv_tick_inc(LV_TICK_PERIOD_MS);
 }
 
-SemaphoreHandle_t xGuiSemaphore;
+static SemaphoreHandle_t xGuiSemaphore;
 
-void gui_task(void *pvParameter)
+void gui_task_handler(void *pvParameter)
 {
     (void) pvParameter;
 

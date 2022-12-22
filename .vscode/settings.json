@@ -55,7 +55,12 @@
         "gpio.h": "c",
         "stdint.h": "c",
         "esp_attr.h": "c",
-        "nvs_flash.h": "c"
+        "nvs_flash.h": "c",
+        "task_define.h": "c",
+        "queue.h": "c",
+        "ui_main.h": "c",
+        "param.h": "c",
+        "esp_event.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

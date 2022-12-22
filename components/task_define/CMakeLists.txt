@@ -1,4 +1,4 @@
-idf_component_register(SRCS "task_config.c"
+idf_component_register(SRCS "task_define.c"
                        INCLUDE_DIRS "."
                        REQUIRES ui_main
                        )

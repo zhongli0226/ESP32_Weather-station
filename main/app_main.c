@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2022-09-24 22:49:57
  * @LastEditors: tangwc
- * @LastEditTime: 2022-12-21 20:12:32
+ * @LastEditTime: 2022-12-22 21:30:38
  * @FilePath: \esp32_weather-station\main\app_main.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
@@ -18,11 +18,10 @@
 #include "freertos/task.h"
 
 #include "esp_vfs.h"
-#include "esp_spiffs.h"
 #include "driver/gpio.h"
 #include "nvs_flash.h"
 
-
+#include "task_define.h"
 
 void app_main(void)
 {
@@ -36,6 +35,11 @@ void app_main(void)
 	}
 	ESP_ERROR_CHECK(ret);
     
-	/*创建lvgl任务显示*/
-	xTaskCreatePinnedToCore(gui_task, "gui task", 4096*2, NULL, 0, NULL, 1);
+	/*创建任务*/
+	create_app_task();
+	while (1)
+	{
+		vTaskDelay(1000);
+	}
+	
 }
