@@ -1,4 +1,4 @@
 idf_component_register(SRCS "app_main.c"
                     INCLUDE_DIRS "."
-					PRIV_REQUIRES task_define nvs_flash
+					PRIV_REQUIRES task_define nvs_flash smart_config wifi_nvs
 					)

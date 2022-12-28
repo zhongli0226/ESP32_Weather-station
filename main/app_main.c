@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2022-09-24 22:49:57
  * @LastEditors: tangwc
- * @LastEditTime: 2022-12-22 21:30:38
+ * @LastEditTime: 2022-12-24 11:13:57
  * @FilePath: \esp32_weather-station\main\app_main.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
@@ -22,6 +22,12 @@
 #include "nvs_flash.h"
 
 #include "task_define.h"
+#include "smart_config.h"
+#include "wifi_nvs.h"
+
+
+char wifi_name[WIFI_LEN] = {0};
+char wifi_password[WIFI_LEN] = {0};
 
 void app_main(void)
 {
@@ -34,12 +40,18 @@ void app_main(void)
 		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
-    
+	if (Get_nvs_wifi(wifi_name, wifi_password) == 1) // 判断是否有连接标志
+	{
+		wifi_station_normal_init();
+	}
+	else
+	{
+		wifi_smart_config_init();
+	}
 	/*创建任务*/
 	create_app_task();
 	while (1)
 	{
 		vTaskDelay(1000);
 	}
-	
 }

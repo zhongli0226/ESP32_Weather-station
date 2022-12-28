@@ -60,7 +60,8 @@
         "queue.h": "c",
         "ui_main.h": "c",
         "param.h": "c",
-        "esp_event.h": "c"
+        "esp_event.h": "c",
+        "esp_smartconfig.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
