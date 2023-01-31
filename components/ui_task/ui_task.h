@@ -9,8 +9,8 @@
  * 
  *  Copyright (c) 2022 by tangwc, All Rights Reserved. 
  */
-#ifndef __UI_MAIN_H__
-#define __UI_MAIN_H__
+#ifndef __UI_TASK_H__
+#define __UI_TASK_H__
 
 void gui_task_handler(void *pvParameter);
 

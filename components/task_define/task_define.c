@@ -3,20 +3,20 @@
  * @Version:
  * @Autor: tangwc
  * @Date: 2022-12-21 20:10:30
- * @LastEditors: tangwc
- * @LastEditTime: 2022-12-22 21:57:31
- * @FilePath: \esp32_weather-station\components\task_define\task_define.c
+ * @LastEditors: tangwc tangwc@chipsea.com
+ * @LastEditTime: 2023-01-31 16:13:39
+ * @FilePath: \esp32_weather-station-develop\components\task_define\task_define.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
  */
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "esp_check.h"
 
-#include "ui_main.h"
+#include "ui_task.h"
 #include "task_define.h"
 
 static const char *TAG = "task_define";

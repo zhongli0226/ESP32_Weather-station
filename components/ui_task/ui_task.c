@@ -23,7 +23,7 @@
 #include "lvgl_helpers.h"
 #include "lv_examples/src/lv_demo_widgets/lv_demo_widgets.h"
 
-#include "ui_main.h"
+#include "ui_task.h"
 
 #define TAG "gui_task"
 #define LV_TICK_PERIOD_MS 1
