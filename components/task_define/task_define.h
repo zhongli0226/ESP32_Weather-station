@@ -48,6 +48,7 @@ typedef struct//任务结构体
 BaseType_t create_app_task(void);
 
 void* get_gui_task_handle(void);
+void* get_net_task_handle(void);
 
 // void* get_gui_task_queue_handle(void);
 

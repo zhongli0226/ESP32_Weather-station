@@ -22,16 +22,24 @@
 #include "nvs_flash.h"
 
 #include "task_define.h"
-#include "smart_config.h"
-#include "wifi_nvs.h"
 
 
-char wifi_name[WIFI_LEN] = {0};
-char wifi_password[WIFI_LEN] = {0};
+
+static void nvs_init(void);
 
 void app_main(void)
 {
+	nvs_init();
+	/*创建任务*/
+	create_app_task();
+	while (1)
+	{
+		vTaskDelay(1000);
+	}
+}
 
+static void nvs_init(void)
+{
 	// 初始化nvs用于存放wifi或者其他需要掉电保存的东西
 	esp_err_t ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES)
@@ -40,18 +48,4 @@ void app_main(void)
 		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
-	if (Get_nvs_wifi(wifi_name, wifi_password) == 1) // 判断是否有连接标志
-	{
-		wifi_station_normal_init();
-	}
-	else
-	{
-		wifi_smart_config_init();
-	}
-	/*创建任务*/
-	create_app_task();
-	while (1)
-	{
-		vTaskDelay(1000);
-	}
 }
