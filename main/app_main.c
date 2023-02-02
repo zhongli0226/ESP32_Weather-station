@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2022-09-24 22:49:57
  * @LastEditors: tangwc
- * @LastEditTime: 2022-12-24 11:13:57
+ * @LastEditTime: 2023-02-02 21:34:23
  * @FilePath: \esp32_weather-station\main\app_main.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
@@ -17,21 +17,29 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "esp_log.h"
 #include "esp_vfs.h"
 #include "driver/gpio.h"
 #include "nvs_flash.h"
 
+#include "smart_config.h"
+#include "wifi_nvs.h"
 #include "task_define.h"
 
 
+static const char *TAG = "app_main";
+
 
 static void nvs_init(void);
+static void wifi_init(void);
 
 void app_main(void)
 {
 	nvs_init();
 	/*创建任务*/
 	create_app_task();
+	//开启WiFi
+	wifi_init();
 	while (1)
 	{
 		vTaskDelay(1000);
@@ -48,4 +56,18 @@ static void nvs_init(void)
 		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
+}
+
+static void wifi_init(void)
+{
+	if (Get_nvs_wifi(wifi_name, wifi_password) == 1) // 判断是否有连接标志
+	{
+		ESP_LOGI(TAG, "wifi_station_normal_init");
+		wifi_station_normal_init();
+	}
+	else
+	{
+		ESP_LOGI(TAG, "wifi_smart_config_init");
+		wifi_smart_config_init();
+	}
 }

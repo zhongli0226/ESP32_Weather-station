@@ -19,15 +19,6 @@ char wifi_password[WIFI_LEN] = { 0 };
 void network_task_handler(void* pvParameter)
 {
     (void)pvParameter;
-    
-    if (Get_nvs_wifi(wifi_name, wifi_password) == 1) // 判断是否有连接标志
-    {
-        wifi_station_normal_init();
-    }
-    else
-    {
-        wifi_smart_config_init();
-    }
     while (1)
 	{
 		vTaskDelay(1000);

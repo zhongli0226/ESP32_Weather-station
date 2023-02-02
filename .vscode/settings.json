@@ -61,7 +61,10 @@
         "ui_main.h": "c",
         "param.h": "c",
         "esp_event.h": "c",
-        "esp_smartconfig.h": "c"
+        "esp_smartconfig.h": "c",
+        "wifi_nvs.h": "c",
+        "smart_config.h": "c",
+        "esp_vfs.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
