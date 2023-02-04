@@ -26,7 +26,7 @@ static EventGroupHandle_t s_wifi_event_group;
 #define ESPTOUCH_DONE_BIT BIT1
 #define WIFI_FAIL_BIT BIT2
 
-//最大重连次数
+// 最大重连次数
 #define EXAMPLE_ESP_MAXIMUM_RETRY 10
 
 static const char *TAG = "smartconfig";
@@ -57,7 +57,10 @@ static void smartconfig_event_handler(void *arg, esp_event_base_t event_base,
         else
         {
             ESP_LOGI(TAG, "connect to the AP fail");
-            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+            //清除连接标志位
+            Clear_nvs_wifi_flag();
+            // WiFi无法连接，复位重新连接
+            esp_restart();
         }
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
@@ -254,7 +257,7 @@ void wifi_init_sta(char *ssid, char *pass)
         Clear_nvs_wifi_flag();
         ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
                  wifi_config.sta.ssid, wifi_config.sta.password);
-        //WiFi无法连接，复位重新连接
+        // WiFi无法连接，复位重新连接
         esp_restart();
     }
     else
@@ -262,10 +265,10 @@ void wifi_init_sta(char *ssid, char *pass)
         ESP_LOGE(TAG, "UNEXPECTED Eprotocol_examples_common.h:ENT");
     }
 
-    /* 取消注册后，该事件将不会被处理。 */
-    // ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
+    /* 取消注册后，该事件将不会被处理。 不关闭 WIFI_EVENT因为可能存在断连情况*/
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
     // ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, instance_any_id));
-    // vEventGroupDelete(s_wifi_event_group);
+    vEventGroupDelete(s_wifi_event_group);
 }
 
 void wifi_smart_config_init(void)
@@ -281,9 +284,12 @@ void wifi_smart_config_init(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &smartconfig_event_handler, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &smartconfig_event_handler, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_register(SC_EVENT, ESP_EVENT_ANY_ID, &smartconfig_event_handler, NULL));
+    esp_event_handler_instance_t instance_got_ip;
+    esp_event_handler_instance_t instance_any_id;
+
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &smartconfig_event_handler, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &smartconfig_event_handler, NULL, &instance_got_ip));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(SC_EVENT, ESP_EVENT_ANY_ID, &smartconfig_event_handler, NULL, &instance_any_id));
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_start());
@@ -304,6 +310,10 @@ void wifi_smart_config_init(void)
     {
         Set_nvs_wifi_flag();
     }
+    /* 取消注册后，该事件将不会被处理。 */
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(SC_EVENT, ESP_EVENT_ANY_ID, instance_any_id));
+    vEventGroupDelete(s_wifi_event_group);
 }
 
 void wifi_station_normal_init(void)
