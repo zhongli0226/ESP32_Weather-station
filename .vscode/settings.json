@@ -67,7 +67,9 @@
         "esp_vfs.h": "c",
         "weather_json.h": "c",
         "event_groups.h": "c",
-        "network_task.h": "c"
+        "network_task.h": "c",
+        "esp_http_client.h": "c",
+        "esp_tls.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
