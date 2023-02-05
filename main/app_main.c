@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2022-09-24 22:49:57
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-02 21:34:23
+ * @LastEditTime: 2023-02-05 16:28:39
  * @FilePath: \esp32_weather-station\main\app_main.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
@@ -42,7 +42,8 @@ void app_main(void)
 	wifi_init();
 	while (1)
 	{
-		vTaskDelay(1000);
+		//ESP_LOGI(TAG,"This is app main while !");
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 }
 

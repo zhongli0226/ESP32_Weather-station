@@ -251,6 +251,7 @@ void wifi_init_sta(char *ssid, char *pass)
         Set_nvs_wifi_flag();
         ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
                  wifi_config.sta.ssid, wifi_config.sta.password);
+        xSemaphoreGive(wifi_sem);//wifi 连接完成 修改信号量
     }
     else if (bits & WIFI_FAIL_BIT)
     {
@@ -309,6 +310,7 @@ void wifi_smart_config_init(void)
     if (bits & ESPTOUCH_DONE_BIT)
     {
         Set_nvs_wifi_flag();
+        xSemaphoreGive(wifi_sem);//wifi 连接完成 修改信号量
     }
     /* 取消注册后，该事件将不会被处理。 */
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, instance_got_ip));

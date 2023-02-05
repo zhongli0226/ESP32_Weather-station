@@ -64,7 +64,10 @@
         "esp_smartconfig.h": "c",
         "wifi_nvs.h": "c",
         "smart_config.h": "c",
-        "esp_vfs.h": "c"
+        "esp_vfs.h": "c",
+        "weather_json.h": "c",
+        "event_groups.h": "c",
+        "network_task.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
