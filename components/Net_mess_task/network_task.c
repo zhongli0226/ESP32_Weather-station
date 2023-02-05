@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-05 21:05:44
+ * @LastEditTime: 2023-02-05 21:34:55
  * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -192,6 +192,7 @@ static void http_with_url_weather_now(void)
 	}
 
 	printf("local_response_buffer:%s ", local_response_buffer); /*打印心知天气json原始数据*/
+	esp_http_client_cleanup(client);
 }
 
 void network_task_handler(void *pvParameter)
