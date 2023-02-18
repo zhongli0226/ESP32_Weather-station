@@ -10,7 +10,7 @@
 static const char *TAG = "weather json";
 
 
-
+//全局变量 用户天气信息
 user_seniverse_config_t user_sen_config;
 
 

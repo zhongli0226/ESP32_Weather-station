@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-05 21:34:55
+ * @LastEditTime: 2023-02-18 21:22:11
  * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -34,8 +34,10 @@
 
 static const char *TAG = "network task";
 
-SemaphoreHandle_t wifi_sem; // 信号量
+// WiFi连接成功标志 信号量
+SemaphoreHandle_t wifi_sem; 
 
+//WiFi名称和密码
 char wifi_name[WIFI_LEN] = {0};
 char wifi_password[WIFI_LEN] = {0};
 
@@ -48,7 +50,11 @@ static void time_sync_notification_cb(struct timeval *tv)
 {
 	ESP_LOGI(TAG, "Notification of a time synchronization event");
 }
-
+/**
+ * @description: http事件回调
+ * @param {esp_http_client_event_t} *evt:
+ * @return {*}
+ */
 esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
 	static char *output_buffer; // 用于存储来自事件处理程序的http请求响应的缓冲区
@@ -128,7 +134,10 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 	}
 	return ESP_OK;
 }
-
+/**
+ * @description: 等待10s时间更新
+ * @return {*}
+ */
 static void obtain_time(void)
 {
 	// sntp init
@@ -151,7 +160,10 @@ static void obtain_time(void)
 	time(&now);
 	localtime_r(&now, &timeinfo);
 }
-
+/**
+ * @description: sntp时间初始化
+ * @return {*}
+ */
 static void station_sntp_init(void)
 {
 	time_t now;
@@ -168,7 +180,10 @@ static void station_sntp_init(void)
 	setenv("TZ", "CST-8", 1);
 	tzset();
 }
-
+/**
+ * @description: 获取心知天气实时天气
+ * @return {*}
+ */
 static void http_with_url_weather_now(void)
 {
 	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
@@ -192,6 +207,38 @@ static void http_with_url_weather_now(void)
 	}
 
 	printf("local_response_buffer:%s ", local_response_buffer); /*打印心知天气json原始数据*/
+	cjson_to_struct_now_info(local_response_buffer); //json 解析
+	esp_http_client_cleanup(client);
+}
+
+/**
+ * @description: 获取心知天气预报天气
+ * @return {*}
+ */
+static void http_with_url_weather_daily(void)
+{
+	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
+	esp_http_client_config_t config = {
+		.url = "https://api.seniverse.com/v3/weather/daily.json?key=ScklFsoNV7aWkbSiU&location=ip&language=en&unit=c",
+		.event_handler = _http_event_handler,
+		.user_data = local_response_buffer, // 传递本地缓冲区的地址以获取响应
+	};
+	esp_http_client_handle_t client = esp_http_client_init(&config);
+	// GET
+	esp_err_t err = esp_http_client_perform(client);
+	if (err == ESP_OK)
+	{
+		ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
+				 esp_http_client_get_status_code(client),
+				 esp_http_client_get_content_length(client));
+	}
+	else
+	{
+		ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
+	}
+
+	printf("local_response_buffer:%s ", local_response_buffer); /*打印心知天气json原始数据*/
+	cjson_to_struct_daily_info(local_response_buffer);//json 解析
 	esp_http_client_cleanup(client);
 }
 
@@ -211,6 +258,7 @@ void network_task_handler(void *pvParameter)
 	{
 		ESP_LOGI(TAG, "wifi connent finish!");
 		station_sntp_init(); // sntp,时间同步
+		http_with_url_weather_daily();
 	}
 	while (1)
 	{
