@@ -15,7 +15,7 @@
 
 #include "wifi_nvs.h"
 #include "smart_config.h"
-
+#include "ui_load.h"
 /* FreeRTOS事件组在我们连接并准备发出请求时发出信号 */
 static EventGroupHandle_t s_wifi_event_group;
 
@@ -57,9 +57,11 @@ static void smartconfig_event_handler(void *arg, esp_event_base_t event_base,
         else
         {
             ESP_LOGI(TAG, "connect to the AP fail");
+            ui_status = WIFI_CONNECT_FAIL;
             //清除连接标志位
             Clear_nvs_wifi_flag();
             // WiFi无法连接，复位重新连接
+            vTaskDelay(2000 / portTICK_PERIOD_MS);//延迟2s后重启
             esp_restart();
         }
     }
@@ -251,6 +253,7 @@ void wifi_init_sta(char *ssid, char *pass)
         Set_nvs_wifi_flag();
         ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
                  wifi_config.sta.ssid, wifi_config.sta.password);
+        ui_status = WIFI_CONNECT_SUCCESS;
         xSemaphoreGive(wifi_sem);//wifi 连接完成 修改信号量
     }
     else if (bits & WIFI_FAIL_BIT)
@@ -258,6 +261,10 @@ void wifi_init_sta(char *ssid, char *pass)
         Clear_nvs_wifi_flag();
         ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
                  wifi_config.sta.ssid, wifi_config.sta.password);
+
+        ui_status = WIFI_CONNECT_FAIL;       
+
+        vTaskDelay(2000 / portTICK_PERIOD_MS);//延迟2s后重启
         // WiFi无法连接，复位重新连接
         esp_restart();
     }
@@ -310,6 +317,7 @@ void wifi_smart_config_init(void)
     if (bits & ESPTOUCH_DONE_BIT)
     {
         Set_nvs_wifi_flag();
+        ui_status = WIFI_CONNECT_SUCCESS;
         xSemaphoreGive(wifi_sem);//wifi 连接完成 修改信号量
     }
     /* 取消注册后，该事件将不会被处理。 */

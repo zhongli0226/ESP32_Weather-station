@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2022-09-24 22:49:57
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-05 16:28:39
+ * @LastEditTime: 2023-02-25 20:49:48
  * @FilePath: \esp32_weather-station\main\app_main.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
@@ -25,7 +25,7 @@
 #include "smart_config.h"
 #include "wifi_nvs.h"
 #include "task_define.h"
-
+#include "ui_load.h"
 
 static const char *TAG = "app_main";
 
@@ -64,11 +64,13 @@ static void wifi_init(void)
 	if (Get_nvs_wifi(wifi_name, wifi_password) == 1) // 判断是否有连接标志
 	{
 		ESP_LOGI(TAG, "wifi_station_normal_init");
+		ui_status = HISTORY_DATA_FLAG;
 		wifi_station_normal_init();
 	}
 	else
 	{
 		ESP_LOGI(TAG, "wifi_smart_config_init");
+		ui_status = SMART_CONFIG_FLAG;
 		wifi_smart_config_init();
 	}
 }

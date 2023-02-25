@@ -69,7 +69,9 @@
         "event_groups.h": "c",
         "network_task.h": "c",
         "esp_http_client.h": "c",
-        "esp_tls.h": "c"
+        "esp_tls.h": "c",
+        "ui_task.h": "c",
+        "ui_load.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
