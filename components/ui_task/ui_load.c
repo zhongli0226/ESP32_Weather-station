@@ -21,7 +21,7 @@ static void bar_anim(lv_task_t *t)
     x++;
     lv_snprintf(buf, sizeof(buf), "check historical data!");
     lv_obj_set_style_local_value_str(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, buf); // 显示字符串
-    if(x == 40)   // 保证加载动画流畅性
+    if (x == 40)                                                                  // 保证加载动画流畅性
       state = 1;
     break;
   case 1:                               // 状态 1
@@ -60,8 +60,18 @@ static void bar_anim(lv_task_t *t)
     else if (ui_status == WIFI_CONNECT_FAIL) // 连接失败
     {
       x = 100;
-      lv_snprintf(buf, sizeof(buf), "FAIL! Check Wifi message! Restart....");
+      lv_snprintf(buf, sizeof(buf), "FAIL! Restart....");
       lv_obj_set_style_local_value_str(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, buf); // 显示字符串
+      lv_bar_set_value(bar, x, LV_ANIM_OFF);                                        // 设置值，关闭动画
+
+      lv_obj_t *label = lv_label_create(lv_scr_act(), NULL); // 在主屏幕创建一个标签
+      lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);    // 标签长内容框，保持控件宽度，内容过长就换行
+      lv_label_set_recolor(label, true);                     // 使能字符命令重新对字符上色
+      lv_obj_set_width(label, 150);
+      lv_label_set_text(label, "#ff0000 Waring!# \n "
+                               "Please check you WiFi!"); // 设置显示文本
+      lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, -70); // 对齐到中心偏下
+      lv_task_del(t);
     }
     break;
 
@@ -87,7 +97,7 @@ void ui_init_bg(void)
   lv_scr_load(scr_load); // 设置加载屏幕为当前活动屏幕
 }
 
-void bar_demo(void)
+void Loading_interface(void)
 {
   lv_obj_t *bar = lv_bar_create(lv_scr_act(), NULL);
   lv_bar_set_type(bar, LV_BAR_TYPE_NORMAL);

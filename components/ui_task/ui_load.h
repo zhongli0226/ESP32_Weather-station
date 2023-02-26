@@ -18,6 +18,6 @@ extern lv_obj_t *scr_main; // 主显示屏幕
 extern ui_status_t ui_status;
 
 void ui_init_bg(void);
-void bar_demo(void);
+void Loading_interface(void);
 
 #endif

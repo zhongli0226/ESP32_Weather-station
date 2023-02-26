@@ -68,7 +68,7 @@ void gui_task_handler(void *pvParameter)
 
     //lv_demo_widgets();
     ui_init_bg();
-    bar_demo();
+    Loading_interface();
     while (1)
     {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */

@@ -61,7 +61,7 @@ static void smartconfig_event_handler(void *arg, esp_event_base_t event_base,
             //清除连接标志位
             Clear_nvs_wifi_flag();
             // WiFi无法连接，复位重新连接
-            vTaskDelay(2000 / portTICK_PERIOD_MS);//延迟2s后重启
+            vTaskDelay(10000 / portTICK_PERIOD_MS);//延迟10s后重启
             esp_restart();
         }
     }
@@ -264,7 +264,7 @@ void wifi_init_sta(char *ssid, char *pass)
 
         ui_status = WIFI_CONNECT_FAIL;       
 
-        vTaskDelay(2000 / portTICK_PERIOD_MS);//延迟2s后重启
+        vTaskDelay(10000 / portTICK_PERIOD_MS);//延迟10s后重启
         // WiFi无法连接，复位重新连接
         esp_restart();
     }
