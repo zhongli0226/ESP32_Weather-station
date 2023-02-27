@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-18 21:22:11
+ * @LastEditTime: 2023-02-27 20:58:03
  * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -245,10 +245,10 @@ static void http_with_url_weather_daily(void)
 void network_task_handler(void *pvParameter)
 {
 	(void)pvParameter;
-	// sntp 测试
-	static time_t now_time;
-	static struct tm time_info;
-	char strftime_buf[64];
+	// // sntp 测试
+	// static time_t now_time;
+	// static struct tm time_info;
+	// char strftime_buf[64];
 	uint32_t url_times = 0;
 	uint32_t result = 0;
 	wifi_sem = xSemaphoreCreateBinary(); // 创建信号量
@@ -266,10 +266,10 @@ void network_task_handler(void *pvParameter)
 		{
 			http_with_url_weather_now();
 		}
-		time(&now_time);
-		localtime_r(&now_time, &time_info);
-		strftime(strftime_buf, sizeof(strftime_buf), "%c", &time_info);
-		ESP_LOGI(TAG, "The current date/time in Shanghai is: %s", strftime_buf);
+		// time(&now_time);
+		// localtime_r(&now_time, &time_info);
+		// strftime(strftime_buf, sizeof(strftime_buf), "%c", &time_info);
+		// ESP_LOGI(TAG, "The current date/time in Shanghai is: %s", strftime_buf);
 		// ESP_LOGI(TAG,"This is network task while !");
 		vTaskDelay(2000 / portTICK_PERIOD_MS);
 		url_times++;

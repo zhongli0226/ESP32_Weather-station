@@ -4,8 +4,8 @@
  * @Autor: tangwc
  * @Date: 2022-12-21 20:08:12
  * @LastEditors: tangwc
- * @LastEditTime: 2022-12-22 21:49:58
- * @FilePath: \esp32_weather-station\components\ui_main\ui_main.c
+ * @LastEditTime: 2023-02-27 20:51:47
+ * @FilePath: \esp32_weather-station\components\ui_task\ui_task.c
  * 
  *  Copyright (c) 2022 by tangwc, All Rights Reserved. 
  */
@@ -23,6 +23,7 @@
 #include "lvgl_helpers.h"
 #include "ui_task.h"
 #include "ui_load.h"
+#include "ui_main.h"
 
 #define TAG "gui_task"
 #define LV_TICK_PERIOD_MS 1
@@ -69,6 +70,9 @@ void gui_task_handler(void *pvParameter)
     //lv_demo_widgets();
     ui_init_bg();
     Loading_interface();
+
+    Main_interface();
+
     while (1)
     {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */
