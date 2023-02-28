@@ -12,7 +12,7 @@ static const char *TAG = "weather json";
 
 //全局变量 用户天气信息
 user_seniverse_config_t user_sen_config;
-
+uint32_t user_sen_flag = 0;
 
 /**
  * @description: 解析daily api接口 心知天气json数据
@@ -56,7 +56,7 @@ void cjson_to_struct_daily_info(char *json_data)
                 cJSON *Plocation = cJSON_GetObjectItem(results_root, "location");
 
                 item = cJSON_GetObjectItem(Plocation, "name");
-                user_sen_config.name = item->valuestring;
+                user_sen_config.name = cJSON_Print(item);
                 ESP_LOGI(TAG,"name:%s\n", cJSON_Print(item));
                 //strcpy(name, user_sen_config.name);
                 /*-------------------------------------------------------------------*/
@@ -76,17 +76,17 @@ void cjson_to_struct_daily_info(char *json_data)
                 {
 
                     item = cJSON_GetObjectItem(daily_root, "wind_direction");
-                    user_sen_config.wind_direction = item->valuestring;
+                    user_sen_config.wind_direction = cJSON_Print(item);
                     ESP_LOGI(TAG,"wind_direction:%s\n", cJSON_Print(item));
                     //strcpy(wind_direction, user_sen_config.wind_direction);
 
                     item = cJSON_GetObjectItem(daily_root, "wind_scale");
-                    user_sen_config.wind_scale = item->valuestring;
+                    user_sen_config.wind_scale = cJSON_Print(item);
                     ESP_LOGI(TAG,"wind_scale:%s\n", cJSON_Print(item));
                     //wind_scale = atoi(user_sen_config.wind_scale);
 
                     item = cJSON_GetObjectItem(daily_root, "humidity");
-                    user_sen_config.humidity = item->valuestring;
+                    user_sen_config.humidity = cJSON_Print(item);
                     ESP_LOGI(TAG,"humidity:%s\n", cJSON_Print(item));
                     //humi = atoi(user_sen_config.humidity);
 
@@ -146,16 +146,16 @@ void cjson_to_struct_now_info(char *json_data)
                 cJSON *Pdaily = cJSON_GetObjectItem(results_root, "now");
 
                 item = cJSON_GetObjectItem(Pdaily, "text");
-                user_sen_config.text = item->valuestring;
+                user_sen_config.text = cJSON_Print(item);
                 ESP_LOGI(TAG,"text_day:%s\n", cJSON_Print(item));
 
                 item = cJSON_GetObjectItem(Pdaily, "code");
-                user_sen_config.code = item->valuestring;
+                user_sen_config.code = cJSON_Print(item);
                 //code_day = atoi(user_sen_config.code);
                 ESP_LOGI(TAG,"code_day:%s\n", cJSON_Print(item));
 
                 item = cJSON_GetObjectItem(Pdaily, "temperature");
-                user_sen_config.temperature = item->valuestring;
+                user_sen_config.temperature = cJSON_Print(item);
                 //temperature = atoi(user_sen_config.temperature);
                 ESP_LOGI(TAG,"temperature:%s\n", cJSON_Print(item));
 

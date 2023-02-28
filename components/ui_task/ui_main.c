@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-27 20:32:25
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-27 20:51:14
+ * @LastEditTime: 2023-02-28 21:34:29
  * @FilePath: \esp32_weather-station\components\ui_task\ui_main.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -13,10 +13,12 @@
 #include <sys/time.h>
 
 #include "esp_sntp.h"
+#include "esp_log.h"
+#include "esp_system.h"
 
 #include "ui_main.h"
 #include "ui_load.h"
-
+#include "weather_json.h"
 
 typedef struct _lv_clock
 {
@@ -28,6 +30,7 @@ typedef struct _lv_clock
     lv_obj_t *temperature_label;  // 温度标签
 } lv_clock_t;
 
+static const char *TAG = "ui_main";
 static void clock_date_task_callback(lv_task_t *task);
 
 void Main_interface(void)
@@ -75,7 +78,7 @@ static void clock_date_task_callback(lv_task_t *task)
     static const char *week_day[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     time_t now_time;
     struct tm time_info;
-    
+
     time(&now_time);
     localtime_r(&now_time, &time_info);
 
@@ -91,10 +94,21 @@ static void clock_date_task_callback(lv_task_t *task)
 
     lv_label_set_text_fmt(clock->time_label, "%02d:%02d:%02d", hour, minutes, second);
     lv_obj_align(clock->time_label, lv_obj_get_parent(clock->time_label), LV_ALIGN_CENTER, 0, -10);
-    // ESP_LOGI(TAG,"time : %d:%d:%d",time_info.tm_hour,time_info.tm_min,time_info.tm_sec);
+        // ESP_LOGI(TAG,"time : %d:%d:%d",time_info.tm_hour,time_info.tm_min,time_info.tm_sec);
     lv_label_set_text_fmt(clock->data_label, "%d-%02d-%02d", year, month, day);
     lv_obj_align(clock->data_label, lv_obj_get_parent(clock->data_label), LV_ALIGN_IN_BOTTOM_LEFT, 0, -5);
 
     lv_label_set_text_fmt(clock->weekday_label, "%s", week_day[weekday]);
     lv_obj_align(clock->weekday_label, lv_obj_get_parent(clock->weekday_label), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -5);
+    
+    if(user_sen_flag)
+    {
+        ESP_LOGI(TAG, "wind_direction:%s", user_sen_config.wind_direction);
+        ESP_LOGI(TAG, "wind_scale:%s", user_sen_config.wind_scale);
+        ESP_LOGI(TAG, "humidity:%s", user_sen_config.humidity);
+        ESP_LOGI(TAG, "name:%s", user_sen_config.name);
+        ESP_LOGI(TAG, "text_day:%s", user_sen_config.text);
+        ESP_LOGI(TAG, "code_day:%s", user_sen_config.code);
+        ESP_LOGI(TAG, "temperature:%s", user_sen_config.temperature);
+    }
 }

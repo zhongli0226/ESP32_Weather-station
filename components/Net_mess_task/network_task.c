@@ -262,9 +262,12 @@ void network_task_handler(void *pvParameter)
 	}
 	while (1)
 	{
-		if (url_times % 10 == 0)
+		if (url_times % 1800 == 0)
 		{
 			http_with_url_weather_now();
+			if(user_sen_flag == 0)
+				user_sen_flag = 1;
+			url_times = 0;
 		}
 		// time(&now_time);
 		// localtime_r(&now_time, &time_info);
