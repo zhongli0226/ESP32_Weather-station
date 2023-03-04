@@ -49,7 +49,7 @@ BaseType_t create_app_task(void);
 
 void* get_gui_task_handle(void);
 void* get_net_task_handle(void);
-
+void* get_led_task_handle(void);
 // void* get_gui_task_queue_handle(void);
 
 

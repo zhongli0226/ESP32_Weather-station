@@ -3,9 +3,9 @@
  * @Version:
  * @Autor: tangwc
  * @Date: 2022-12-21 20:10:30
- * @LastEditors: tangwc tangwc@chipsea.com
- * @LastEditTime: 2023-02-01 14:24:12
- * @FilePath: \esp32_weather-station-develop\components\task_define\task_define.c
+ * @LastEditors: tangwc
+ * @LastEditTime: 2023-03-04 13:55:39
+ * @FilePath: \esp32_weather-station\components\task_define\task_define.c
  *
  *  Copyright (c) 2022 by tangwc, All Rights Reserved.
  */
@@ -19,6 +19,7 @@
 
 #include "ui_task.h"
 #include "network_task.h"
+#include "led_task.h"
 #include "task_define.h"
 
 static const char *TAG = "task_define";
@@ -40,6 +41,7 @@ static const char *TAG = "task_define";
 /***************TASK DEINE********************/
 #define GUI_TASK "gui_task"
 #define NET_TASK "net_task"
+#define LED_TASK "led_task"
 
 #define TASK_GUI_STACK_SIZE (4096*2)
 #define TASK_GUI_PRIORITY  (0) 
@@ -47,8 +49,12 @@ static const char *TAG = "task_define";
 #define TASK_NET_STACK_SIZE (4096*2)
 #define TASK_NET_PRIORITY  (1) 
 
+#define TASK_LED_STACK_SIZE (4096)
+#define TASK_LED_PRIORITY  (0) 
+
 static TaskHandle_t g_gui_task_handle;
 static TaskHandle_t g_net_task_handle;
+static TaskHandle_t g_led_task_handle;
 
 static task_define_t g_task_define_tab[] = {
     {
@@ -69,6 +75,15 @@ static task_define_t g_task_define_tab[] = {
         .pxCreatedTask = &g_net_task_handle,
         //.queue_define = &g_gui_queue_info,
     },
+    {
+        .pvTaskCode = (void*)led_task_handler,
+        .pcName = LED_TASK,
+        .usStackDepth = TASK_LED_STACK_SIZE,
+        .pvParameters = NULL,
+        .uxPriority = TASK_LED_PRIORITY,
+        .pxCreatedTask = &g_led_task_handle,
+        //.queue_define = &g_gui_queue_info,
+    },    
 };
 
 
@@ -123,6 +138,10 @@ void* get_net_task_handle(void)
     return (TaskHandle_t)g_net_task_handle;
 }
 
+void* get_led_task_handle(void)
+{
+    return (TaskHandle_t)g_led_task_handle;
+}
 /***********************获取任务消息队列句柄函数*******************************/
 
 // void* get_gui_task_queue_handle(void)
