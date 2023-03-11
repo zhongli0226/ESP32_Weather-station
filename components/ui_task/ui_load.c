@@ -68,7 +68,7 @@ static void bar_anim(lv_task_t *t)
       lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);    // 标签长内容框，保持控件宽度，内容过长就换行
       lv_label_set_recolor(label, true);                     // 使能字符命令重新对字符上色
       lv_obj_set_width(label, 150);
-      lv_label_set_text(label, "#ff0000 Waring!# \n "
+      lv_label_set_text(label, LV_SYMBOL_WARNING " #ff0000 Waring!# \n "
                                "Please check you WiFi!"); // 设置显示文本
       lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, -70); // 对齐到中心偏下
       lv_task_del(t);
@@ -112,6 +112,18 @@ void Loading_interface(void)
   lv_obj_set_style_local_value_ofs_y(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_DPI / 20);
   // 设置本地属性->底部边距
   lv_obj_set_style_local_margin_bottom(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_DPI / 7);
+  // 设置字体颜色
+  lv_obj_set_style_local_value_color(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT,lv_color_hex(0xd7412e));
+  //设置进度条背景颜色
+  lv_obj_set_style_local_bg_color(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT,lv_color_hex(0xf5f5f5));
+  // 设置进度条颜色
+  lv_obj_set_style_local_bg_color(bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT,lv_color_hex(0x2196f3));
+  // 设置进度条边框颜色和大小
+  lv_obj_set_style_local_border_color(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, lv_color_hex(0x2196f3));
+  lv_obj_set_style_local_border_width(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, 2);
+  lv_obj_set_style_local_pad_all(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, 6);
+  lv_obj_set_style_local_radius(bar, LV_BAR_PART_BG, LV_STATE_DEFAULT, 6);
+
   lv_bar_set_start_value(bar, 0, LV_ANIM_OFF); // 设置开始值，非动画方式
   lv_task_create(bar_anim, 100, LV_TASK_PRIO_LOWEST, bar);
 }

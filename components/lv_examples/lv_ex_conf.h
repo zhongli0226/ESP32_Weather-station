@@ -18,7 +18,7 @@
  *******************/
 
 /* Enable printf-ing data in demoes and examples */
-#define LV_EX_PRINTF       1
+#define LV_EX_PRINTF       0
 
 #define LV_EX_KEYBOARD     0       /*Add PC keyboard support to some examples (`lv_drivers` repository is required)*/
 #define LV_EX_MOUSEWHEEL   0       /*Add 'encoder' (mouse wheel) support to some examples (`lv_drivers` repository is required)*/
@@ -29,12 +29,12 @@
 
 /*Show some widget*/
 
-#define LV_USE_DEMO_WIDGETS        1
+#define LV_USE_DEMO_WIDGETS        0
 
 
 
 #if LV_USE_DEMO_WIDGETS
-#define LV_DEMO_WIDGETS_SLIDESHOW   1
+#define LV_DEMO_WIDGETS_SLIDESHOW   0
 #endif
 
 /*Printer demo, optimized for 800x480*/

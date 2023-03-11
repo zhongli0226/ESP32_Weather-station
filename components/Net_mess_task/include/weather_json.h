@@ -10,17 +10,19 @@
  */
 typedef struct
 {
-	char *name;//地点
-    char *text;//天气
-    char *code;//城市代码
-    char *temperature;//温度
-    char *wind_direction;//风向
-    char *wind_scale;//风力等级
-	char *humidity;//相对湿度
+	char name[30];//地点
+    char text[20];//天气
+    char code[10];//城市代码
+    char temperature[10];//温度
+    char wind_direction[10];//风向
+    char wind_scale[10];//风力等级
+	char humidity[10];//相对湿度
+    char high[10]; //最高气温
+    char low[10]; //最低气温
 } user_seniverse_config_t;
 
 extern user_seniverse_config_t user_sen_config;
-extern uint32_t user_sen_flag;
+
 /**
  * @description: 解析daily api接口 心知天气json数据
  * @param {char} *json_data

@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
  * @LastEditors: tangwc
- * @LastEditTime: 2023-02-27 20:58:03
+ * @LastEditTime: 2023-03-11 21:31:59
  * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -36,7 +36,8 @@ static const char *TAG = "network task";
 
 // WiFi连接成功标志 信号量
 SemaphoreHandle_t wifi_sem; 
-
+uint32_t user_sen_flag = 0;
+uint32_t user_time_flag = 0;
 //WiFi名称和密码
 char wifi_name[WIFI_LEN] = {0};
 char wifi_password[WIFI_LEN] = {0};
@@ -48,6 +49,7 @@ char wifi_password[WIFI_LEN] = {0};
  */
 static void time_sync_notification_cb(struct timeval *tv)
 {
+	user_time_flag = 1;
 	ESP_LOGI(TAG, "Notification of a time synchronization event");
 }
 /**
@@ -219,7 +221,7 @@ static void http_with_url_weather_daily(void)
 {
 	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
 	esp_http_client_config_t config = {
-		.url = "https://api.seniverse.com/v3/weather/daily.json?key=ScklFsoNV7aWkbSiU&location=ip&language=en&unit=c",
+		.url = "https://api.seniverse.com/v3/weather/daily.json?key=ScklFsoNV7aWkbSiU&location=ip&language=en&unit=c&days=1",
 		.event_handler = _http_event_handler,
 		.user_data = local_response_buffer, // 传递本地缓冲区的地址以获取响应
 	};
@@ -252,7 +254,8 @@ void network_task_handler(void *pvParameter)
 	uint32_t url_times = 0;
 	uint32_t result = 0;
 	wifi_sem = xSemaphoreCreateBinary(); // 创建信号量
-
+	user_sen_flag = 0;
+	user_time_flag = 0;
 	result = xSemaphoreTake(wifi_sem, portMAX_DELAY);
 	if (result == pdPASS)
 	{
@@ -260,6 +263,7 @@ void network_task_handler(void *pvParameter)
 		station_sntp_init(); // sntp,时间同步
 		http_with_url_weather_daily();
 	}
+	
 	while (1)
 	{
 		if (url_times % 1800 == 0)

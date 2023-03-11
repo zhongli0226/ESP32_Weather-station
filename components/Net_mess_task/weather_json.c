@@ -1,3 +1,14 @@
+/*
+ * @Description:
+ * @Version:
+ * @Autor: tangwc
+ * @Date: 2023-03-04 14:35:41
+ * @LastEditors: tangwc
+ * @LastEditTime: 2023-03-11 21:34:14
+ * @FilePath: \esp32_weather-station\components\Net_mess_task\weather_json.c
+ *
+ *  Copyright (c) 2023 by tangwc, All Rights Reserved.
+ */
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
@@ -9,10 +20,21 @@
 
 static const char *TAG = "weather json";
 
+// 全局变量 用户天气信息
+user_seniverse_config_t user_sen_config = {0};
 
-//全局变量 用户天气信息
-user_seniverse_config_t user_sen_config;
-uint32_t user_sen_flag = 0;
+/**
+ * @description: 去除cjson打印出来的双引号
+ * @param {char} *format_data
+ * @param {char} *data
+ * @return {*}
+ */
+static void format_json_data(char *format_data,char *data)
+{
+    uint32_t len = strlen(data);
+    memcpy(format_data, data + 1, len - 2);
+    ESP_LOGI(TAG, "%s", format_data);
+}
 
 /**
  * @description: 解析daily api接口 心知天气json数据
@@ -28,13 +50,13 @@ void cjson_to_struct_daily_info(char *json_data)
     cJSON *root = NULL;
     cJSON *results_root = NULL;
     cJSON *daily_root = NULL;
-    //截取有效json
+    // 截取有效json
     char *index = strchr(json_data, '{');
     strcpy(json_data, index);
     root = cJSON_Parse(json_data); /*json_data 为心知天气的原始数据*/
     if (!root)
     {
-        ESP_LOGI(TAG,"Error before: [%s]\n", cJSON_GetErrorPtr());
+        ESP_LOGI(TAG, "Error before: [%s]\n", cJSON_GetErrorPtr());
     }
     else
     {
@@ -49,16 +71,16 @@ void cjson_to_struct_daily_info(char *json_data)
             results_root = cJSON_Parse(sresults);
             if (!results_root)
             {
-                ESP_LOGI(TAG,"Error before: [%s]\n", cJSON_GetErrorPtr());
+                ESP_LOGI(TAG, "Error before: [%s]\n", cJSON_GetErrorPtr());
             }
             else
             {
                 cJSON *Plocation = cJSON_GetObjectItem(results_root, "location");
 
                 item = cJSON_GetObjectItem(Plocation, "name");
-                user_sen_config.name = cJSON_Print(item);
-                ESP_LOGI(TAG,"name:%s\n", cJSON_Print(item));
-                //strcpy(name, user_sen_config.name);
+                format_json_data(user_sen_config.name,cJSON_Print(item));
+                ESP_LOGI(TAG, "name:%s\n", cJSON_Print(item));
+                // strcpy(name, user_sen_config.name);
                 /*-------------------------------------------------------------------*/
                 cJSON *Pdaily = cJSON_GetObjectItem(results_root, "daily");
 
@@ -70,25 +92,32 @@ void cjson_to_struct_daily_info(char *json_data)
 
                 if (!daily_root)
                 {
-                    ESP_LOGI(TAG,"Error before: [%s]\n", cJSON_GetErrorPtr());
+                    ESP_LOGI(TAG, "Error before: [%s]\n", cJSON_GetErrorPtr());
                 }
                 else
                 {
+                    item = cJSON_GetObjectItem(daily_root, "high");
+                    format_json_data(user_sen_config.high,cJSON_Print(item));
+                    ESP_LOGI(TAG, "high:%s\n", cJSON_Print(item));
+
+                    item = cJSON_GetObjectItem(daily_root, "low");
+                    format_json_data(user_sen_config.low,cJSON_Print(item));
+                    ESP_LOGI(TAG, "low:%s\n", cJSON_Print(item));
 
                     item = cJSON_GetObjectItem(daily_root, "wind_direction");
-                    user_sen_config.wind_direction = cJSON_Print(item);
-                    ESP_LOGI(TAG,"wind_direction:%s\n", cJSON_Print(item));
-                    //strcpy(wind_direction, user_sen_config.wind_direction);
+                    format_json_data(user_sen_config.wind_direction,cJSON_Print(item));
+                    ESP_LOGI(TAG, "wind_direction:%s\n", cJSON_Print(item));
+                    // strcpy(wind_direction, user_sen_config.wind_direction);
 
                     item = cJSON_GetObjectItem(daily_root, "wind_scale");
-                    user_sen_config.wind_scale = cJSON_Print(item);
-                    ESP_LOGI(TAG,"wind_scale:%s\n", cJSON_Print(item));
-                    //wind_scale = atoi(user_sen_config.wind_scale);
+                    format_json_data(user_sen_config.wind_scale,cJSON_Print(item));
+                    ESP_LOGI(TAG, "wind_scale:%s\n", cJSON_Print(item));
+                    // wind_scale = atoi(user_sen_config.wind_scale);
 
                     item = cJSON_GetObjectItem(daily_root, "humidity");
-                    user_sen_config.humidity = cJSON_Print(item);
-                    ESP_LOGI(TAG,"humidity:%s\n", cJSON_Print(item));
-                    //humi = atoi(user_sen_config.humidity);
+                    format_json_data(user_sen_config.humidity,cJSON_Print(item));
+                    ESP_LOGI(TAG, "humidity:%s\n", cJSON_Print(item));
+                    // humi = atoi(user_sen_config.humidity);
 
                     cJSON_Delete(daily_root); /*每次调用cJSON_Parse函数后，都要释放内存*/
                 }
@@ -112,13 +141,13 @@ void cjson_to_struct_now_info(char *json_data)
     cJSON *item = NULL;
     cJSON *root = NULL;
     cJSON *results_root = NULL;
-    //截取有效json
+    // 截取有效json
     char *index = strchr(json_data, '{');
     strcpy(json_data, index);
     root = cJSON_Parse(json_data); /*json_data 为心知天气的原始数据*/
     if (!root)
     {
-        ESP_LOGI(TAG,"Error before: [%s]\n", cJSON_GetErrorPtr());
+        ESP_LOGI(TAG, "Error before: [%s]\n", cJSON_GetErrorPtr());
     }
     else
     {
@@ -133,31 +162,31 @@ void cjson_to_struct_now_info(char *json_data)
             results_root = cJSON_Parse(sresults);
             if (!results_root)
             {
-                ESP_LOGI(TAG,"Error before: [%s]\n", cJSON_GetErrorPtr());
+                ESP_LOGI(TAG, "Error before: [%s]\n", cJSON_GetErrorPtr());
             }
             else
             {
                 cJSON *Plocation = cJSON_GetObjectItem(results_root, "location");
 
                 item = cJSON_GetObjectItem(Plocation, "name");
-                user_sen_config.name = cJSON_Print(item);
-                ESP_LOGI(TAG,"name:%s\n", cJSON_Print(item));
+                format_json_data(user_sen_config.name,cJSON_Print(item));
+                ESP_LOGI(TAG, "name(%d):%s\n", strlen(user_sen_config.name), cJSON_Print(item));
 
                 cJSON *Pdaily = cJSON_GetObjectItem(results_root, "now");
 
                 item = cJSON_GetObjectItem(Pdaily, "text");
-                user_sen_config.text = cJSON_Print(item);
-                ESP_LOGI(TAG,"text_day:%s\n", cJSON_Print(item));
+                format_json_data(user_sen_config.text,cJSON_Print(item));
+                ESP_LOGI(TAG, "text_day:%s\n", cJSON_Print(item));
 
                 item = cJSON_GetObjectItem(Pdaily, "code");
-                user_sen_config.code = cJSON_Print(item);
-                //code_day = atoi(user_sen_config.code);
-                ESP_LOGI(TAG,"code_day:%s\n", cJSON_Print(item));
+                format_json_data(user_sen_config.code,cJSON_Print(item));
+                // code_day = atoi(user_sen_config.code);
+                ESP_LOGI(TAG, "code_day:%s\n", cJSON_Print(item));
 
                 item = cJSON_GetObjectItem(Pdaily, "temperature");
-                user_sen_config.temperature = cJSON_Print(item);
-                //temperature = atoi(user_sen_config.temperature);
-                ESP_LOGI(TAG,"temperature:%s\n", cJSON_Print(item));
+                format_json_data(user_sen_config.temperature,cJSON_Print(item));
+                // temperature = atoi(user_sen_config.temperature);
+                ESP_LOGI(TAG, "temperature:%s\n", cJSON_Print(item));
 
                 cJSON_Delete(results_root); /*每次调用cJSON_Parse函数后，都要释放内存*/
             }
