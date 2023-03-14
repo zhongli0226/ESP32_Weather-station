@@ -68,7 +68,7 @@ static void bar_anim(lv_task_t *t)
       lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);    // 标签长内容框，保持控件宽度，内容过长就换行
       lv_label_set_recolor(label, true);                     // 使能字符命令重新对字符上色
       lv_obj_set_width(label, 150);
-      lv_label_set_text(label, LV_SYMBOL_WARNING " #ff0000 Waring!# \n "
+      lv_label_set_text(label, "#ff0000 " LV_SYMBOL_WARNING " Waring!# \n "
                                "Please check you WiFi!"); // 设置显示文本
       lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, -70); // 对齐到中心偏下
       lv_task_del(t);
