@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-27 20:32:25
  * @LastEditors: tangwc
- * @LastEditTime: 2023-03-14 20:15:01
+ * @LastEditTime: 2023-03-16 21:12:09
  * @FilePath: \esp32_weather-station\components\ui_task\ui_main.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -52,6 +52,9 @@
 #define WEATHER_28 "\xEE\x98\xA0" // 21
 #define WEATHER_29 "\xEE\x99\xB6" // 99
 
+#define HUMIDITU "\xEE\x9C\x9D"
+#define WIND_MESS "\xEE\x9A\x96"
+
 typedef struct _lv_clock
 {
     lv_obj_t *time_label;              // 时间标签
@@ -61,6 +64,8 @@ typedef struct _lv_clock
     lv_obj_t *temperature_now_label;   // 实时温度
     lv_obj_t *weather_code_label;      // 天气代码
     lv_obj_t *ip_label;                // 地点标签
+    lv_obj_t *humi_label;              // 湿度
+    lv_obj_t *wind_label;              // 风力
 } lv_clock_t;
 
 static const char *TAG = "ui_main";
@@ -147,6 +152,32 @@ void Main_interface(void)
     lv_clock.ip_label = lv_label_create(obj_bottom, NULL);
     lv_obj_add_style(lv_clock.ip_label, LV_LABEL_PART_MAIN, &style_ip_name); // 应用效果风格
 
+    static lv_style_t icon_style;
+    lv_style_init(&icon_style);
+    lv_style_set_text_color(&icon_style, LV_STATE_DEFAULT, lv_color_hex(0x79b8ff)); // 字体颜色
+    lv_style_set_text_font(&icon_style, LV_STATE_DEFAULT, &my_font_30);
+
+    static lv_style_t figures_style;
+    lv_style_init(&figures_style);
+    lv_style_set_text_color(&figures_style, LV_STATE_DEFAULT, lv_color_hex(0x79b8ff)); // 字体颜色
+    lv_style_set_text_font(&figures_style, LV_STATE_DEFAULT, &lv_font_montserrat_32);
+
+    lv_obj_t *humi_icon_label = lv_label_create(obj_bottom, NULL);
+    lv_obj_add_style(humi_icon_label, LV_LABEL_PART_MAIN, &icon_style); // 应用效果风格
+    lv_label_set_text_fmt(humi_icon_label, HUMIDITU);
+    lv_obj_align(humi_icon_label, obj_bottom, LV_ALIGN_IN_TOP_LEFT, 5, 10);
+
+    lv_obj_t *wind_icon_label = lv_label_create(obj_bottom, NULL);
+    lv_obj_add_style(wind_icon_label, LV_LABEL_PART_MAIN, &icon_style); // 应用效果风格
+    lv_label_set_text_fmt(wind_icon_label, WIND_MESS);
+    lv_obj_align(wind_icon_label, obj_bottom, LV_ALIGN_IN_TOP_MID, 35, 10);
+
+    lv_clock.humi_label = lv_label_create(obj_bottom, NULL);
+    lv_obj_add_style(lv_clock.humi_label, LV_LABEL_PART_MAIN, &figures_style); // 应用效果风格
+
+    lv_clock.wind_label = lv_label_create(obj_bottom, NULL);
+    lv_obj_add_style(lv_clock.wind_label, LV_LABEL_PART_MAIN, &figures_style); // 应用效果风格
+
     lv_task_t *task_timer = lv_task_create(clock_date_task_callback, 200, LV_TASK_PRIO_MID, &lv_clock); // 创建定时任务，200ms刷新一次
     lv_task_ready(task_timer);
     ESP_LOGI(TAG, "start time call back!");
@@ -222,6 +253,9 @@ static void clock_date_task_callback(lv_task_t *task)
         case 8:
             lv_label_set_text(clock->weather_code_label, WEATHER_9); // 设置显示文本
             break;
+        case 9:
+            lv_label_set_text(clock->weather_code_label, WEATHER_11); // 设置显示文本
+            break;
         case 10:
             lv_label_set_text(clock->weather_code_label, WEATHER_14); // 设置显示文本
             break;
@@ -235,7 +269,7 @@ static void clock_date_task_callback(lv_task_t *task)
             lv_label_set_text(clock->weather_code_label, WEATHER_7); // 设置显示文本
             break;
         case 14:
-            lv_label_set_text(clock->weather_code_label, WEATHER_10); // 设置显示文本
+            lv_label_set_text(clock->weather_code_label, WEATHER_12); // 设置显示文本
             break;
         case 15:
             lv_label_set_text(clock->weather_code_label, WEATHER_2); // 设置显示文本
@@ -266,6 +300,10 @@ static void clock_date_task_callback(lv_task_t *task)
             break;
         case 24:
             lv_label_set_text(clock->weather_code_label, WEATHER_17); // 设置显示文本
+            break;
+        case 25:
+        case 37:
+            lv_label_set_text(clock->weather_code_label, WEATHER_16); // 设置显示文本
             break;
         case 26:
             lv_label_set_text(clock->weather_code_label, WEATHER_20); // 设置显示文本
@@ -301,6 +339,12 @@ static void clock_date_task_callback(lv_task_t *task)
         lv_label_set_text_fmt(clock->ip_label, LV_SYMBOL_GPS " %s", user_sen_config.name);
         lv_obj_align(clock->ip_label, lv_obj_get_parent(clock->ip_label), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
+        lv_label_set_text_fmt(clock->humi_label, "%s", user_sen_config.humidity);
+        lv_obj_align(clock->humi_label, lv_obj_get_parent(clock->humi_label), LV_ALIGN_IN_TOP_LEFT, 40, 5);
+
+        lv_label_set_text_fmt(clock->wind_label, "%s", user_sen_config.wind_scale);
+        lv_obj_align(clock->wind_label, lv_obj_get_parent(clock->wind_label), LV_ALIGN_IN_TOP_MID, 70, 5);
+
         // ESP_LOGI(TAG, "wind_direction:%s", user_sen_config.wind_direction);
         // ESP_LOGI(TAG, "wind_scale:%s", user_sen_config.wind_scale);
         // ESP_LOGI(TAG, "humidity:%s", user_sen_config.humidity);
@@ -322,5 +366,11 @@ static void clock_date_task_callback(lv_task_t *task)
 
         lv_label_set_text_fmt(clock->ip_label, LV_SYMBOL_GPS " --");
         lv_obj_align(clock->ip_label, lv_obj_get_parent(clock->ip_label), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+
+        lv_label_set_text_fmt(clock->humi_label, "--");
+        lv_obj_align(clock->humi_label, lv_obj_get_parent(clock->humi_label), LV_ALIGN_IN_TOP_LEFT, 40, 5);
+
+        lv_label_set_text_fmt(clock->wind_label, "--");
+        lv_obj_align(clock->wind_label, lv_obj_get_parent(clock->wind_label), LV_ALIGN_IN_TOP_MID, 70, 5);
     }
 }

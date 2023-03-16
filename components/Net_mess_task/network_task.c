@@ -3,9 +3,9 @@
  * @Version:
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
- * @LastEditors: tangwc tangwc@chipsea.com
- * @LastEditTime: 2023-03-14 14:13:47
- * @FilePath: \esp32_weather-station-develop\components\Net_mess_task\network_task.c
+ * @LastEditors: tangwc
+ * @LastEditTime: 2023-03-16 21:15:54
+ * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
  */
@@ -32,22 +32,22 @@
 
 #define MAX_HTTP_OUTPUT_BUFFER 2048
 
-static const char* TAG = "network task";
+static const char *TAG = "network task";
 
 // WiFi连接成功标志 信号量
 SemaphoreHandle_t wifi_sem;
 uint32_t user_sen_flag = 0;
 uint32_t user_time_flag = 0;
-//WiFi名称和密码
-char wifi_name[WIFI_LEN] = { 0 };
-char wifi_password[WIFI_LEN] = { 0 };
+// WiFi名称和密码
+char wifi_name[WIFI_LEN] = {0};
+char wifi_password[WIFI_LEN] = {0};
 
 /**
  * @description: sntp 时间更新完成回调
  * @param {timeval} *tv
  * @return {*}
  */
-static void time_sync_notification_cb(struct timeval* tv)
+static void time_sync_notification_cb(struct timeval *tv)
 {
 	user_time_flag = 1;
 	ESP_LOGI(TAG, "Notification of a time synchronization event");
@@ -57,9 +57,9 @@ static void time_sync_notification_cb(struct timeval* tv)
  * @param {esp_http_client_event_t} *evt:
  * @return {*}
  */
-esp_err_t _http_event_handler(esp_http_client_event_t* evt)
+esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
-	static char* output_buffer; // 用于存储来自事件处理程序的http请求响应的缓冲区
+	static char *output_buffer; // 用于存储来自事件处理程序的http请求响应的缓冲区
 	static int output_len;		// 存储读取的字节数
 	switch (evt->event_id)
 	{
@@ -92,7 +92,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t* evt)
 			{
 				if (output_buffer == NULL)
 				{
-					output_buffer = (char*)malloc(esp_http_client_get_content_length(evt->client));
+					output_buffer = (char *)malloc(esp_http_client_get_content_length(evt->client));
 					output_len = 0;
 					if (output_buffer == NULL)
 					{
@@ -151,7 +151,7 @@ static void obtain_time(void)
 
 	// wait for time to be set
 	time_t now = 0;
-	struct tm timeinfo = { 0 };
+	struct tm timeinfo = {0};
 	int retry = 0;
 	const int retry_count = 10;
 	while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count)
@@ -188,7 +188,7 @@ static void station_sntp_init(void)
  */
 static void http_with_url_weather_now(void)
 {
-	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = { 0 };
+	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
 	esp_http_client_config_t config = {
 		.url = "https://api.seniverse.com/v3/weather/now.json?key=ScklFsoNV7aWkbSiU&location=ip&language=en&unit=c",
 		.event_handler = _http_event_handler,
@@ -200,8 +200,8 @@ static void http_with_url_weather_now(void)
 	if (err == ESP_OK)
 	{
 		ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
-			esp_http_client_get_status_code(client),
-			esp_http_client_get_content_length(client));
+				 esp_http_client_get_status_code(client),
+				 esp_http_client_get_content_length(client));
 	}
 	else
 	{
@@ -209,7 +209,7 @@ static void http_with_url_weather_now(void)
 	}
 
 	printf("local_response_buffer:%s ", local_response_buffer); /*打印心知天气json原始数据*/
-	cjson_to_struct_now_info(local_response_buffer); //json 解析
+	cjson_to_struct_now_info(local_response_buffer);			// json 解析
 	esp_http_client_cleanup(client);
 }
 
@@ -219,7 +219,7 @@ static void http_with_url_weather_now(void)
  */
 static void http_with_url_weather_daily(void)
 {
-	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = { 0 };
+	char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
 	esp_http_client_config_t config = {
 		.url = "https://api.seniverse.com/v3/weather/daily.json?key=ScklFsoNV7aWkbSiU&location=ip&language=en&unit=c&days=1",
 		.event_handler = _http_event_handler,
@@ -231,8 +231,8 @@ static void http_with_url_weather_daily(void)
 	if (err == ESP_OK)
 	{
 		ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
-			esp_http_client_get_status_code(client),
-			esp_http_client_get_content_length(client));
+				 esp_http_client_get_status_code(client),
+				 esp_http_client_get_content_length(client));
 	}
 	else
 	{
@@ -240,20 +240,18 @@ static void http_with_url_weather_daily(void)
 	}
 
 	printf("local_response_buffer:%s ", local_response_buffer); /*打印心知天气json原始数据*/
-	cjson_to_struct_daily_info(local_response_buffer);//json 解析
+	cjson_to_struct_daily_info(local_response_buffer);			// json 解析
 	esp_http_client_cleanup(client);
 }
 
-void network_task_handler(void* pvParameter)
+void network_task_handler(void *pvParameter)
 {
 	(void)pvParameter;
 	// // sntp 测试
-	static time_t now_time;
-	static struct tm time_info;
+	// static time_t now_time;
+	// static struct tm time_info;
 	// char strftime_buf[64];
-	int url_time_hour = 0;
-	int url_time_min = 0;
-	uint32_t call_back_times = 0;
+	uint32_t call_now_times = 0, call_daily_times = 0;
 	uint32_t result = 0;
 	wifi_sem = xSemaphoreCreateBinary(); // 创建信号量
 	user_sen_flag = 0;
@@ -273,20 +271,16 @@ void network_task_handler(void* pvParameter)
 		// ESP_LOGI(TAG, "The current date/time in Shanghai is: %s", strftime_buf);
 		// ESP_LOGI(TAG,"This is network task while !");
 		vTaskDelay(2000 / portTICK_PERIOD_MS);
-		call_back_times++;
-		if (call_back_times % 15 == 0)
+		call_now_times++;
+		if (call_now_times >= 900) // 半小时刷新一次实时天气
 		{
-			time(&now_time);
-			localtime_r(&now_time, &time_info);
-			url_time_hour = time_info.tm_hour;
-			url_time_min = time_info.tm_min;
-			if (url_time_min == 0)
+			http_with_url_weather_now();
+			call_daily_times++;
+			call_now_times = 0;
+			if (call_daily_times >= 10) //5个小时刷新一次每日天气
 			{
-				http_with_url_weather_now();
-				if (url_time_hour == 0)
-					http_with_url_weather_daily();
+				http_with_url_weather_daily();
 			}
-			call_back_times = 0;
 		}
 	}
 }
