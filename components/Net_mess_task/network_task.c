@@ -280,6 +280,7 @@ void network_task_handler(void *pvParameter)
 			if (call_daily_times >= 10) //5个小时刷新一次每日天气
 			{
 				http_with_url_weather_daily();
+				call_daily_times++;
 			}
 		}
 	}
