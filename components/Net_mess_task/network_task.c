@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
  * @LastEditors: tangwc
- * @LastEditTime: 2023-03-16 21:15:54
+ * @LastEditTime: 2023-03-21 20:44:51
  * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -280,7 +280,7 @@ void network_task_handler(void *pvParameter)
 			if (call_daily_times >= 10) //5个小时刷新一次每日天气
 			{
 				http_with_url_weather_daily();
-				call_daily_times++;
+				call_daily_times = 0;
 			}
 		}
 	}
