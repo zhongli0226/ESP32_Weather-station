@@ -4,7 +4,7 @@
  * @Autor: tangwc
  * @Date: 2023-02-04 11:09:17
  * @LastEditors: tangwc
- * @LastEditTime: 2023-03-21 20:44:51
+ * @LastEditTime: 2023-03-28 21:26:56
  * @FilePath: \esp32_weather-station\components\Net_mess_task\network_task.c
  *
  *  Copyright (c) 2023 by tangwc, All Rights Reserved.
@@ -145,7 +145,9 @@ static void obtain_time(void)
 	// sntp init
 	ESP_LOGI(TAG, "Initializing SNTP");
 	sntp_setoperatingmode(SNTP_OPMODE_POLL);
-	sntp_setservername(0, "pool.ntp.org");
+	sntp_setservername(0, "cn.ntp.org.cn");
+	sntp_setservername(1, "0.cn.pool.ntp.org");
+	sntp_setservername(2, "time1.cloud.tencent.com");
 	sntp_set_time_sync_notification_cb(time_sync_notification_cb);
 	sntp_init();
 
