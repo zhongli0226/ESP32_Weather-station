@@ -174,13 +174,10 @@ static void station_sntp_init(void)
 	struct tm timeinfo;
 	time(&now);
 	localtime_r(&now, &timeinfo);
-	if (timeinfo.tm_year < (2022 - 1900))
-	{
-		ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
-		obtain_time();
-		// update 'now' variable with current time
-		time(&now);
-	}
+	ESP_LOGI(TAG, "Time Init, Connecting to WiFi and getting time over NTP.");
+	obtain_time();
+	// update 'now' variable with current time
+	time(&now);
 	setenv("TZ", "CST-8", 1);
 	tzset();
 }
@@ -279,7 +276,7 @@ void network_task_handler(void *pvParameter)
 			http_with_url_weather_now();
 			call_daily_times++;
 			call_now_times = 0;
-			if (call_daily_times >= 10) //5个小时刷新一次每日天气
+			if (call_daily_times >= 10) // 5个小时刷新一次每日天气
 			{
 				http_with_url_weather_daily();
 				call_daily_times = 0;
